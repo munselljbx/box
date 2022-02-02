@@ -17,6 +17,12 @@ inline float v2fDist(const sf::Vector2f& v1, const sf::Vector2f& v2, float pow =
 {
 	return v2fMag(v2 - v1, pow);
 }
+
+inline static const float DIST_PER_SIDE_CIRCLE = 3.f;
+inline unsigned int circleNSides(float radius)
+{
+	return static_cast<unsigned int>(radius * 2.f * ((float)M_PI / DIST_PER_SIDE_CIRCLE));
+}
 } // namespace constant
 } // namespace app
 

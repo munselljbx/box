@@ -1,6 +1,7 @@
 #ifndef APP_BALL_HPP
 #define APP_BALL_HPP
 
+#include "Constant.hpp"
 #include "IActor.hpp"
 
 namespace app
@@ -10,6 +11,7 @@ class Ball : public IActor
 public:
 	Ball(const sf::Vector2f& position, const sf::Vector2f& velocity, const sf::Color& color, const float radius);
 	virtual float getRadius() const;
+
 private:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 

@@ -15,6 +15,9 @@ public:
 	void addActor(IActor* toAdd);
 
 private:
+	void threeChargedBalls();
+	void nChargedBallsCircle(int n, float radius, float dotRadius);
+
 	sf::RenderWindow* m_window;
 	std::vector<std::unique_ptr<IActor>> m_actors;
 };
