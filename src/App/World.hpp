@@ -12,6 +12,7 @@ class World
 public:
 	World(sf::RenderWindow& window);
 	void loop();
+	void addActor(IActor* toAdd);
 
 private:
 	sf::RenderWindow* m_window;

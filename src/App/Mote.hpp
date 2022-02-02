@@ -9,7 +9,7 @@ class Mote : public IActor
 {
 public:
 	Mote(const sf::Vector2f& position, const sf::Vector2f& velocity, const sf::Color& color);
-
+	virtual float getRadius() const;
 private:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
