@@ -17,6 +17,11 @@ public:
 private:
 	void threeChargedBalls();
 	void nChargedBallsCircle(int n, float radius, float dotRadius);
+	void noChargeElasticBalls();
+	void chargedElasticBalls();
+	void clusters(int n, float smallMass = 50.f);
+	void cruelSatellite();
+	void binaryOrbit();
 
 	sf::RenderWindow* m_window;
 	std::vector<std::unique_ptr<IActor>> m_actors;

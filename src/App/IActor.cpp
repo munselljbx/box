@@ -2,18 +2,21 @@
 
 namespace app
 {
-IActor::IActor(const sf::Vector2f& position, const sf::Vector2f& velocity, const sf::Vector2f& origin, float mass, float charge)
+IActor::IActor(const sf::Vector2f& position, const sf::Vector2f& velocity, bool rigid, const sf::Vector2f& origin, float mass, float charge, float dragCoef)
 {
+	m_rigid = rigid;
 	m_mass = mass;
 	m_charge = charge;
 	setOrigin(origin);
 	setPosition(position);
 	m_vel = velocity;
 	m_acc = sf::Vector2f(0.f, 0.f);
+	m_dragCoef = dragCoef;
 }
 
 void IActor::update()
 {
+	addForce(-m_vel * constant::dragStrength * m_dragCoef);
 	m_vel += m_acc;
 	move(m_vel);
 	m_acc = sf::Vector2f(0.f, 0.f);
@@ -42,16 +45,16 @@ void IActor::update()
 	}
 }
 
-void IActor::influence(std::vector<std::unique_ptr<IActor>>& actors)
-{
-	for (size_t i = 0U; i < actors.size(); i++)
+void IActor::influence(std::vector<std::unique_ptr<IActor>>& actors, size_t start)
+{ // once per actor
+	for (size_t i = start; i < actors.size(); i++)
 	{
 		influence(*actors[i]);
 	}
 }
 
 void IActor::influence(IActor& actor)
-{
+{ // once per pair of actors
 	sf::Vector2f r = actor.getPosition() - getPosition();
 	if (actor.m_mass == 0.f || m_mass == 0.f || r.x == 0.f || r.y == 0.f)
 		return;
@@ -59,10 +62,36 @@ void IActor::influence(IActor& actor)
 	float overlap = (getRadius() + actor.getRadius()) - constant::v2fMag(r);
 	if (overlap > 0.f)
 	{
+		if (m_rigid && actor.m_rigid)
+			elasticCollide(actor, overlap);
 	}
 	else
-	{
-		m_acc += (-constant::chargeStrength * actor.m_charge * m_charge / constant::v2fMag(r, 1.5f) / m_mass) * r;
+	{ // no overlap
+		// coloumb force
+		sf::Vector2f force = -constant::chargeStrength * actor.m_charge * m_charge / constant::v2fMag(r, 1.5f) * r;
+		addForce(force);
+		actor.addForce(-force);
 	}
+}
+
+void IActor::addForce(const sf::Vector2f& force)
+{
+	m_acc += force / m_mass;
+}
+
+void IActor::elasticCollide(IActor& actor, float overlap)
+{
+	sf::Vector2f r = actor.getPosition() - getPosition();
+	sf::Vector2f rHat = r / constant::v2fMag(r);
+
+	sf::Vector2f common = 1.f / (actor.m_mass + m_mass) * overlap * rHat;
+	move(-actor.m_mass * common);
+	actor.move(m_mass * common);
+
+	float rSq = constant::v2fDot(r, r);
+	float rDotV = constant::v2fDot(actor.m_vel - m_vel, r);
+	common = 2.f / (m_mass + actor.m_mass) * rDotV / rSq * r;
+	m_vel += actor.m_mass * common;
+	actor.m_vel -= m_mass * common;
 }
 }

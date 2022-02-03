@@ -7,8 +7,13 @@ namespace constant
 {
 const sf::Vector2f windowSize(800.f, 800.f);
 
-const float chargeStrength = 10.f;
+const float chargeStrength = 10.f; // pos for EM (likes repel), negative for gravity (likes attract)
+const float dragStrength = 1.f; //
 
+inline float v2fDot(const sf::Vector2f& v1, const sf::Vector2f& v2)
+{
+	return v1.x * v2.x + v1.y * v2.y;
+}
 inline float v2fMag(const sf::Vector2f& r, float pow = 0.5)
 {
 	return powf(r.x * r.x + r.y * r.y, pow);
